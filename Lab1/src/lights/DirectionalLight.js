@@ -15,18 +15,32 @@ class DirectionalLight {
         }
     }
 
+    /* 
+     * 光源处建立一个虚拟的摄像机
+     *
+     * 你需要使用 lightPos, focalPoint, lightUp 来构造摄像机的 LookAt 矩阵。
+     *
+     * 推荐使用正交投影，这可以保证场景深度信息在坐标系转换中保持线性从而便于之后使用。
+     * 正交投影的参数决定了 shadow map 所覆盖的范围。 
+    */
     CalcLightMVP(translate, scale) {
+        // create new identity matrix 4x4
         let lightMVP = mat4.create();
         let modelMatrix = mat4.create();
         let viewMatrix = mat4.create();
         let projectionMatrix = mat4.create();
 
         // Model transform
+        mat4.scale(modelMatrix, modelMatrix, scale);
+        mat4.translate(modelMatrix, modelMatrix, translate);
 
-        // View transform
-    
-        // Projection transform
+        // View transform (LookAt Matrix)
+        mat4.lookAt(viewMatrix, this.lightPos, this.focalPoint, this.lightUp);
 
+        // Projection transform（使用 mat4:ortho 方程）
+        mat4.ortho(projectionMatrix, -100, 100, -100, 100, 0, 100);
+
+        // MVP multiplication
         mat4.multiply(lightMVP, projectionMatrix, viewMatrix);
         mat4.multiply(lightMVP, lightMVP, modelMatrix);
 

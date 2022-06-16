@@ -103,8 +103,18 @@ float PCSS(sampler2D shadowMap, vec4 coords){
 
 }
 
-
+/*
+ * 该函数负责查询当前着色点在 ShadowMap 上记录的深度值，并与转换到 
+ * light space 的深度值比较后返回 visibility 项（请注意，使用的查
+ * 询坐标需要先转换到 NDC 标准空间 [0,1]）。
+ * 
+ * # Normalize Device Coordinate: https://zhuanlan.zhihu.com/p/65969162
+ */
 float useShadowMap(sampler2D shadowMap, vec4 shadowCoord){
+  float recordDepth = unpack(texture2D(shadowMap, shadowCoord.xy));
+  
+  float fragDepth = vPositionFromLight.z;
+
   return 1.0;
 }
 
@@ -134,12 +144,14 @@ vec3 blinnPhong() {
 void main(void) {
 
   float visibility;
-  //visibility = useShadowMap(uShadowMap, vec4(shadowCoord, 1.0));
+  vec3 shadowCoord = vPositionFromLight.xyz * 0.5 + 0.5;
+
+  visibility = useShadowMap(uShadowMap, vec4(shadowCoord, 1.0));
   //visibility = PCF(uShadowMap, vec4(shadowCoord, 1.0));
   //visibility = PCSS(uShadowMap, vec4(shadowCoord, 1.0));
 
   vec3 phongColor = blinnPhong();
 
-  //gl_FragColor = vec4(phongColor * visibility, 1.0);
-  gl_FragColor = vec4(phongColor, 1.0);
+  gl_FragColor = vec4(phongColor * visibility, 1.0);
+  //gl_FragColor = vec4(phongColor, 1.0);
 }
