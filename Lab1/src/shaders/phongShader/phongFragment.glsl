@@ -28,6 +28,9 @@ uniform sampler2D uShadowMap;
 
 varying vec4 vPositionFromLight;
 
+#define BIAS_COEF 0.007
+#define BIAS BIAS_COEF * max( 0.0 , 1.0 - dot(normalize(uLightPos), normalize(vNormal)) )
+
 highp float rand_1to1(highp float x ) { 
   // -1 -1
   return fract(sin(x)*10000.0);
@@ -103,19 +106,11 @@ float PCSS(sampler2D shadowMap, vec4 coords){
 
 }
 
-/*
- * 该函数负责查询当前着色点在 ShadowMap 上记录的深度值，并与转换到 
- * light space 的深度值比较后返回 visibility 项（请注意，使用的查
- * 询坐标需要先转换到 NDC 标准空间 [0,1]）。
- * 
- * # Normalize Device Coordinate: https://zhuanlan.zhihu.com/p/65969162
- */
 float useShadowMap(sampler2D shadowMap, vec4 shadowCoord){
-  float recordDepth = unpack(texture2D(shadowMap, shadowCoord.xy));
+  float lightDepth = unpack(texture2D(shadowMap, shadowCoord.xy));
   
-  float fragDepth = vPositionFromLight.z;
-
-  return 1.0;
+  // 如果实际深度大于光照深度，则看不见，返回0
+  return shadowCoord.z - BIAS > lightDepth ? 0.0 : 1.0;
 }
 
 vec3 blinnPhong() {
