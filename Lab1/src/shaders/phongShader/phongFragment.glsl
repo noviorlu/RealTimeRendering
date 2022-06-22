@@ -28,8 +28,23 @@ uniform sampler2D uShadowMap;
 
 varying vec4 vPositionFromLight;
 
+/* HardShadow Depth Bias Term */ 
 #define BIAS_COEF 0.007
 #define BIAS BIAS_COEF * max( 0.0 , 1.0 - dot(normalize(uLightPos), normalize(vNormal)) )
+
+
+/* PCF/BlockerDepth constant */ 
+
+// 使用方法：vec / TEXTURE_SIZE * STRIDE
+// 同比缩小，意思为4000 x 4000 pixel的shadowMap上，取半径为 10 的Disk Convoluation
+#define TEXTURE_SIZE 4000.0
+#define PCF_STRIDE 10.0
+// 根据令其老师的说法，这个需要使用ShadowMap与Light之间的距离来进行运算，但是这块确实不太明白，就随便设了
+// “将shadowMap固定在一个位置，光在shadowMap上投影的大小就是Blocker Search Size”
+#define BLOCKER_STRIDE 100.0
+
+/* PCSS constant */ 
+#define W_LIGHT 5.0
 
 highp float rand_1to1(highp float x) { 
   // -1 -1
@@ -87,28 +102,49 @@ void uniformDiskSamples(const in vec2 randomSeed) {
 }
 
 float findBlocker(sampler2D shadowMap, vec2 uv, float zReceiver) {
-  return 1.0;
+
+  poissonDiskSamples(uv);
+
+  float radiusRatio = 1.0 / TEXTURE_SIZE * BLOCKER_STRIDE;
+  float totalBlockerDepth = 0.0;
+  int blockerCount = 0;
+
+  for(int i = 0; i < BLOCKER_SEARCH_NUM_SAMPLES; i++){
+    
+    vec2 samplerCoord = poissonDisk[i] * radiusRatio + uv;
+    float shadowMapDepth = unpack(texture2D(shadowMap, samplerCoord));
+
+    // 如果zReceiver小于shadowMapDepth，则是Blocker
+    if(zReceiver > shadowMapDepth + BIAS){
+      blockerCount += 1;
+      totalBlockerDepth += shadowMapDepth;
+    }
+  }
+
+  // 如果没有Blocker，后面计算Penumbra会出问题，需要做error catch
+  if(blockerCount == 0) return -1.0;
+
+  return totalBlockerDepth / float(blockerCount);
 }
 
 float PCF(sampler2D shadowMap, vec4 coords) {
 
-  uniformDiskSamples(coords.xy);
-  //poissonDiskSamples(coords.xy);
-
+  //uniformDiskSamples(coords.xy);
+  poissonDiskSamples(coords.xy);
 
   // 将在PCSS中详细计算
-  float radiusRatio = 0.002;
+  float radiusRatio = 1.0 / TEXTURE_SIZE * PCF_STRIDE;
   float blockerDepth = coords.z;
 
   int blockCount = 0;
 
-  for(int i = 0; i < NUM_SAMPLES; i++) {
+  for(int i = 0; i < PCF_NUM_SAMPLES; i++) {
 
     vec2 samplerCoord = poissonDisk[i] * radiusRatio + coords.xy;
-    float lightDepth = unpack(texture2D(shadowMap, samplerCoord));
+    float shadowMapDepth = unpack(texture2D(shadowMap, samplerCoord));
 
     // 如果实际深度大于光照深度，则看不见，返回0
-    blockCount += (blockerDepth - BIAS > lightDepth) ? 0 : 1;
+    blockCount += (blockerDepth - BIAS > shadowMapDepth) ? 0 : 1;
   }
  
   return float(blockCount) / float(NUM_SAMPLES);
@@ -116,21 +152,38 @@ float PCF(sampler2D shadowMap, vec4 coords) {
 
 float PCSS(sampler2D shadowMap, vec4 coords) {
 
+  float dReceiver = coords.z;
+
   // STEP 1: avgblocker depth
-  
+  float dBlocker = findBlocker(shadowMap, coords.xy, dReceiver);
+  if(dBlocker == -1.0) return 1.0;
+
   // STEP 2: penumbra size
-
+  float wPenumbra = (dReceiver - dBlocker) * W_LIGHT / dBlocker;
+  
   // STEP 3: filtering
+  poissonDiskSamples(coords.xy);
 
-  return 1.0;
+  float radiusRatio = 1.0 / TEXTURE_SIZE * PCF_STRIDE * wPenumbra;
+  int blockCount = 0;
 
+  for(int i = 0; i < PCF_NUM_SAMPLES; i++) {
+
+    vec2 samplerCoord = poissonDisk[i] * radiusRatio + coords.xy;
+    float shadowMapDepth = unpack(texture2D(shadowMap, samplerCoord));
+
+    // 如果实际深度大于光照深度，则看不见，返回0
+    blockCount += (dReceiver - BIAS > shadowMapDepth) ? 0 : 1;
+  }
+
+  return float(blockCount) / float(NUM_SAMPLES);
 }
 
 float useShadowMap(sampler2D shadowMap, vec4 shadowCoord) {
-  float lightDepth = unpack(texture2D(shadowMap, shadowCoord.xy));
+  float shadowMapDepth = unpack(texture2D(shadowMap, shadowCoord.xy));
 
   // 如果实际深度大于光照深度，则看不见，返回0
-  return shadowCoord.z - BIAS > lightDepth ? 0.0 : 1.0;
+  return shadowCoord.z - BIAS > shadowMapDepth ? 0.0 : 1.0;
 }
 
 vec3 blinnPhong() {
@@ -161,8 +214,8 @@ void main(void) {
   vec3 shadowCoord = vPositionFromLight.xyz * 0.5 + 0.5;
 
   //visibility = useShadowMap(uShadowMap, vec4(shadowCoord, 1.0));
-  visibility = PCF(uShadowMap, vec4(shadowCoord, 1.0));
-  //visibility = PCSS(uShadowMap, vec4(shadowCoord, 1.0));
+  //visibility = PCF(uShadowMap, vec4(shadowCoord, 1.0));
+  visibility = PCSS(uShadowMap, vec4(shadowCoord, 1.0));
 
   vec3 phongColor = blinnPhong();
 
