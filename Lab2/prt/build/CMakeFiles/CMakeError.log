@@ -1,0 +1,205 @@
+Determining size of off64_t failed with the following output:
+Change Dir: C:/Users/ychen/projects/GAMES202/Lab2/prt/build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe cmTC_90fe9.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:m && Microsoft (R) Build Engine version 17.2.1+52cd2da31 for .NET Framework
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+  Microsoft (R) C/C++ Optimizing Compiler Version 19.32.31332 for x64
+  OFF64_T.c
+C:\Users\ychen\projects\GAMES202\Lab2\prt\build\CMakeFiles\CheckTypeSize\OFF64_T.c(29,12): error C2065: 'off64_t': undeclared identifier [C:\Users\ychen\projects\GAMES202\Lab2\prt\build\CMakeFiles\CMakeTmp\cmTC_90fe9.vcxproj]
+C:\Users\ychen\projects\GAMES202\Lab2\prt\build\CMakeFiles\CheckTypeSize\OFF64_T.c(30,12): error C2065: 'off64_t': undeclared identifier [C:\Users\ychen\projects\GAMES202\Lab2\prt\build\CMakeFiles\CMakeTmp\cmTC_90fe9.vcxproj]
+C:\Users\ychen\projects\GAMES202\Lab2\prt\build\CMakeFiles\CheckTypeSize\OFF64_T.c(31,12): error C2065: 'off64_t': undeclared identifier [C:\Users\ychen\projects\GAMES202\Lab2\prt\build\CMakeFiles\CMakeTmp\cmTC_90fe9.vcxproj]
+C:\Users\ychen\projects\GAMES202\Lab2\prt\build\CMakeFiles\CheckTypeSize\OFF64_T.c(32,12): error C2065: 'off64_t': undeclared identifier [C:\Users\ychen\projects\GAMES202\Lab2\prt\build\CMakeFiles\CMakeTmp\cmTC_90fe9.vcxproj]
+C:\Users\ychen\projects\GAMES202\Lab2\prt\build\CMakeFiles\CheckTypeSize\OFF64_T.c(33,12): error C2065: 'off64_t': undeclared identifier [C:\Users\ychen\projects\GAMES202\Lab2\prt\build\CMakeFiles\CMakeTmp\cmTC_90fe9.vcxproj]
+  Copyright (C) Microsoft Corporation.  All rights reserved.
+  cl /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D _LARGEFILE64_SOURCE=1 /D HAVE_SYS_TYPES_H /D HAVE_STDINT_H /D HAVE_STDDEF_H /D "CMAKE_INTDIR=\"Debug\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_90fe9.dir\Debug\\" /Fd"cmTC_90fe9.dir\Debug\vc143.pdb" /external:W3 /Gd /TC /errorReport:queue C:\Users\ychen\projects\GAMES202\Lab2\prt\build\CMakeFiles\CheckTypeSize\OFF64_T.c
+
+
+C:/Users/ychen/projects/GAMES202/Lab2/prt/build/CMakeFiles/CheckTypeSize/OFF64_T.c:
+#include <sys/types.h>
+#include <stdint.h>
+#include <stddef.h>
+
+
+#undef KEY
+#if defined(__i386)
+# define KEY '_','_','i','3','8','6'
+#elif defined(__x86_64)
+# define KEY '_','_','x','8','6','_','6','4'
+#elif defined(__PPC64__)
+# define KEY '_','_','P','P','C','6','4','_','_'
+#elif defined(__ppc64__)
+# define KEY '_','_','p','p','c','6','4','_','_'
+#elif defined(__PPC__)
+# define KEY '_','_','P','P','C','_','_'
+#elif defined(__ppc__)
+# define KEY '_','_','p','p','c','_','_'
+#elif defined(__aarch64__)
+# define KEY '_','_','a','a','r','c','h','6','4','_','_'
+#elif defined(__ARM_ARCH_7A__)
+# define KEY '_','_','A','R','M','_','A','R','C','H','_','7','A','_','_'
+#elif defined(__ARM_ARCH_7S__)
+# define KEY '_','_','A','R','M','_','A','R','C','H','_','7','S','_','_'
+#endif
+
+#define SIZE (sizeof(off64_t))
+static char info_size[] =  {'I', 'N', 'F', 'O', ':', 's','i','z','e','[',
+  ('0' + ((SIZE / 10000)%10)),
+  ('0' + ((SIZE / 1000)%10)),
+  ('0' + ((SIZE / 100)%10)),
+  ('0' + ((SIZE / 10)%10)),
+  ('0' +  (SIZE    % 10)),
+  ']',
+#ifdef KEY
+  ' ','k','e','y','[', KEY, ']',
+#endif
+  '\0'};
+
+#ifdef __CLASSIC_C__
+int main(argc, argv) int argc; char *argv[];
+#else
+int main(int argc, char *argv[])
+#endif
+{
+  int require = 0;
+  require += info_size[argc];
+  (void)argv;
+  return require;
+}
+
+
+Determining if the function fseeko exists failed with the following output:
+Change Dir: C:/Users/ychen/projects/GAMES202/Lab2/prt/build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe cmTC_9e035.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:m && Microsoft (R) Build Engine version 17.2.1+52cd2da31 for .NET Framework
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+  Microsoft (R) C/C++ Optimizing Compiler Version 19.32.31332 for x64
+  CheckFunctionExists.c
+  Copyright (C) Microsoft Corporation.  All rights reserved.
+  cl /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CHECK_FUNCTION_EXISTS=fseeko /D "CMAKE_INTDIR=\"Debug\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_9e035.dir\Debug\\" /Fd"cmTC_9e035.dir\Debug\vc143.pdb" /external:W3 /Gd /TC /errorReport:queue "C:\Program Files\CMake\share\cmake-3.22\Modules\CheckFunctionExists.c"
+CheckFunctionExists.obj : error LNK2019: unresolved external symbol fseeko referenced in function main [C:\Users\ychen\projects\GAMES202\Lab2\prt\build\CMakeFiles\CMakeTmp\cmTC_9e035.vcxproj]
+C:\Users\ychen\projects\GAMES202\Lab2\prt\build\CMakeFiles\CMakeTmp\Debug\cmTC_9e035.exe : fatal error LNK1120: 1 unresolved externals [C:\Users\ychen\projects\GAMES202\Lab2\prt\build\CMakeFiles\CMakeTmp\cmTC_9e035.vcxproj]
+
+
+
+Determining if the include file unistd.h exists failed with the following output:
+Change Dir: C:/Users/ychen/projects/GAMES202/Lab2/prt/build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe cmTC_297f5.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:m && Microsoft (R) Build Engine version 17.2.1+52cd2da31 for .NET Framework
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+  Microsoft (R) C/C++ Optimizing Compiler Version 19.32.31332 for x64
+  Copyright (C) Microsoft Corporation.  All rights reserved.
+  CheckIncludeFile.c
+C:\Users\ychen\projects\GAMES202\Lab2\prt\build\CMakeFiles\CMakeTmp\CheckIncludeFile.c(1,10): fatal error C1083: Cannot open include file: 'unistd.h': No such file or directory [C:\Users\ychen\projects\GAMES202\Lab2\prt\build\CMakeFiles\CMakeTmp\cmTC_297f5.vcxproj]
+  cl /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\"Debug\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_297f5.dir\Debug\\" /Fd"cmTC_297f5.dir\Debug\vc143.pdb" /external:W3 /Gd /TC /errorReport:queue C:\Users\ychen\projects\GAMES202\Lab2\prt\build\CMakeFiles\CMakeTmp\CheckIncludeFile.c
+
+
+
+Performing C++ SOURCE FILE Test HAVE_GCC_INLINE_ASM_AVX failed with the following output:
+Change Dir: C:/Users/ychen/projects/GAMES202/Lab2/prt/build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe cmTC_ec7eb.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:m && Microsoft (R) Build Engine version 17.2.1+52cd2da31 for .NET Framework
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+  Microsoft (R) C/C++ Optimizing Compiler Version 19.32.31332 for x64
+  src.cxx
+C:\Users\ychen\projects\GAMES202\Lab2\prt\build\CMakeFiles\CMakeTmp\src.cxx(13,1): fatal error C1189: #error:  No GCC style inline asm supported for AVX instructions [C:\Users\ychen\projects\GAMES202\Lab2\prt\build\CMakeFiles\CMakeTmp\cmTC_ec7eb.vcxproj]
+  Copyright (C) Microsoft Corporation.  All rights reserved.
+  cl /c /Zi /W3 /WX- /diagnostics:column /MP /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D _CRT_SECURE_NO_WARNINGS /D __TBB_NO_IMPLICIT_LINKAGE /D HAVE_GCC_INLINE_ASM_AVX /D "CMAKE_INTDIR=\"Debug\"" /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /Fo"cmTC_ec7eb.dir\Debug\\" /Fd"cmTC_ec7eb.dir\Debug\vc143.pdb" /external:W3 /Gd /TP /wd4275 /wd4267 /wd4244 /wd4477 /wd4996 /wd4800 /wd4334 /wd4251 /wd4305 /wd4302 /wd4311 /wd4018 /errorReport:queue C:\Users\ychen\projects\GAMES202\Lab2\prt\build\CMakeFiles\CMakeTmp\src.cxx
+
+
+Source file was:
+
+	int main()
+	{
+	 #if defined(__GNUC__) && defined(__SSE2__)
+		 int n   = 0;
+		 int eax = 0;
+		 int edx = 0;
+		 __asm__(
+			 "xgetbv     ;"
+			 "vzeroupper  "
+			 : "=a"(eax), "=d"(edx) : "c"(n) : );
+	 #else
+		 #error No GCC style inline asm supported for AVX instructions
+	 #endif
+	}
+	
+Performing C++ SOURCE FILE Test HAVE_SYSCONF_NPROCESSORS_ONLN failed with the following output:
+Change Dir: C:/Users/ychen/projects/GAMES202/Lab2/prt/build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe cmTC_1c897.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:m && Microsoft (R) Build Engine version 17.2.1+52cd2da31 for .NET Framework
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+  Microsoft (R) C/C++ Optimizing Compiler Version 19.32.31332 for x64
+  src.cxx
+  Copyright (C) Microsoft Corporation.  All rights reserved.
+  cl /c /Zi /W3 /WX- /diagnostics:column /MP /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D _CRT_SECURE_NO_WARNINGS /D __TBB_NO_IMPLICIT_LINKAGE /D HAVE_SYSCONF_NPROCESSORS_ONLN /D "CMAKE_INTDIR=\"Debug\"" /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /Fo"cmTC_1c897.dir\Debug\\" /Fd"cmTC_1c897.dir\Debug\vc143.pdb" /external:W3 /Gd /TP /wd4275 /wd4267 /wd4244 /wd4477 /wd4996 /wd4800 /wd4334 /wd4251 /wd4305 /wd4302 /wd4311 /wd4018 /errorReport:queue C:\Users\ychen\projects\GAMES202\Lab2\prt\build\CMakeFiles\CMakeTmp\src.cxx
+C:\Users\ychen\projects\GAMES202\Lab2\prt\build\CMakeFiles\CMakeTmp\src.cxx(2,14): fatal error C1083: Cannot open include file: 'unistd.h': No such file or directory [C:\Users\ychen\projects\GAMES202\Lab2\prt\build\CMakeFiles\CMakeTmp\cmTC_1c897.vcxproj]
+
+
+Source file was:
+
+    #include <unistd.h>
+    int main()
+    {
+        sysconf(_SC_NPROCESSORS_ONLN);
+    }
+    
+Checking whether the ASM_MASM compiler is GNU using "--version" did not match "(GNU assembler)|(GCC)|(Free Software Foundation)":
+Microsoft (R) Macro Assembler (x64) Version 14.32.31332.0
+Copyright (C) Microsoft Corporation.  All rights reserved.
+
+MASM : warning A4018:invalid command-line option : --version
+MASM : fatal error A1017:missing source filename
+Checking whether the ASM_MASM compiler is Clang using "--version" did not match "(clang version)":
+Microsoft (R) Macro Assembler (x64) Version 14.32.31332.0
+Copyright (C) Microsoft Corporation.  All rights reserved.
+
+MASM : warning A4018:invalid command-line option : --version
+MASM : fatal error A1017:missing source filename
+Checking whether the ASM_MASM compiler is AppleClang using "--version" did not match "(Apple LLVM version)":
+Microsoft (R) Macro Assembler (x64) Version 14.32.31332.0
+Copyright (C) Microsoft Corporation.  All rights reserved.
+
+MASM : warning A4018:invalid command-line option : --version
+MASM : fatal error A1017:missing source filename
+Checking whether the ASM_MASM compiler is ARMClang using "--version" did not match "armclang":
+Microsoft (R) Macro Assembler (x64) Version 14.32.31332.0
+Copyright (C) Microsoft Corporation.  All rights reserved.
+
+MASM : warning A4018:invalid command-line option : --version
+MASM : fatal error A1017:missing source filename
+Checking whether the ASM_MASM compiler is HP using "-V" did not match "HP C":
+Microsoft (R) Macro Assembler (x64) Version 14.32.31332.0
+Copyright (C) Microsoft Corporation.  All rights reserved.
+
+MASM : warning A4018:invalid command-line option : -V
+MASM : fatal error A1017:missing source filename
+Checking whether the ASM_MASM compiler is Intel using "--version" did not match "(ICC)":
+Microsoft (R) Macro Assembler (x64) Version 14.32.31332.0
+Copyright (C) Microsoft Corporation.  All rights reserved.
+
+MASM : warning A4018:invalid command-line option : --version
+MASM : fatal error A1017:missing source filename
+Checking whether the ASM_MASM compiler is IntelLLVM using "--version" did not match "(Intel[^
+]+oneAPI)":
+Microsoft (R) Macro Assembler (x64) Version 14.32.31332.0
+Copyright (C) Microsoft Corporation.  All rights reserved.
+
+MASM : warning A4018:invalid command-line option : --version
+MASM : fatal error A1017:missing source filename
+Checking whether the ASM_MASM compiler is SunPro using "-V" did not match "Sun C":
+Microsoft (R) Macro Assembler (x64) Version 14.32.31332.0
+Copyright (C) Microsoft Corporation.  All rights reserved.
+
+MASM : warning A4018:invalid command-line option : -V
+MASM : fatal error A1017:missing source filename
+Checking whether the ASM_MASM compiler is XL using "-qversion" did not match "XL C":
+Microsoft (R) Macro Assembler (x64) Version 14.32.31332.0
+Copyright (C) Microsoft Corporation.  All rights reserved.
+
+MASM : warning A4018:invalid command-line option : -qversion
+MASM : fatal error A1017:missing source filename
