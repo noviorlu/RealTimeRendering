@@ -125,13 +125,38 @@ namespace ProjEnv
                 {
                     // TODO: here you need to compute light sh of each face of cubemap of each pixel
                     // TODO: 此处你需要计算每个像素下cubemap某个面的球谐系数
+
+                    // 1. spherical direction
                     Eigen::Vector3f dir = cubemapDirs[i * width * height + y * width + x];
                     int index = (y * width + x) * channel;
+
+                    // 2. get environment light color of pixel(x,y) on cubemap[i]
                     Eigen::Array3f Le(images[i][index + 0], images[i][index + 1],
                                       images[i][index + 2]);
+
+                    // 3. differential solid angle
+                    float dwi = CalcArea((float)x, (float)y, width, height);
+
+                    // loop through each SH coefficient
+                    for (int l = 0; l <= SHOrder; l++)
+                    {
+                        for (int m = -l; m <= l; m++)
+                        {
+                            int idx = sh::GetIndex(l, m);
+
+                            // 4. SH BaseFunction constant
+                            float baseFuncCoeff = sh::EvalSH(l, m, dir.cast<double>());
+
+                            // summation
+                            SHCoeffiecents[idx] += Le * baseFuncCoeff * dwi;
+                        }
+                    }
+
+                    /* -------------------TODO END-------------------- */
                 }
             }
         }
+
         return SHCoeffiecents;
     }
 }
@@ -203,23 +228,32 @@ public:
         {
             const Point3f &v = mesh->getVertexPositions().col(i);
             const Normal3f &n = mesh->getVertexNormals().col(i);
+
+
             auto shFunc = [&](double phi, double theta) -> double {
                 Eigen::Array3d d = sh::ToVector(phi, theta);
                 const auto wi = Vector3f(d.x(), d.y(), d.z());
+
+                // 计算当前射线sample的cosine, 如H<0则返回
+                double H = n.dot(wi);
+
                 if (m_Type == Type::Unshadowed)
                 {
                     // TODO: here you need to calculate unshadowed transport term of a given direction
                     // TODO: 此处你需要计算给定方向下的unshadowed传输项球谐函数值
+                    if (H > 0) return H;
                     return 0;
                 }
                 else
                 {
                     // TODO: here you need to calculate shadowed transport term of a given direction
                     // TODO: 此处你需要计算给定方向下的shadowed传输项球谐函数值
+                    if (H > 0 && !scene->rayIntersect(Ray3f(v, wi))) return H;
                     return 0;
                 }
             };
             auto shCoeff = sh::ProjectFunction(SHOrder, shFunc, m_SampleCount);
+
             for (int j = 0; j < shCoeff->size(); j++)
             {
                 m_TransportSHCoeffs.col(i).coeffRef(j) = (*shCoeff)[j];
@@ -228,6 +262,63 @@ public:
         if (m_Type == Type::Interreflection)
         {
             // TODO: leave for bonus
+            
+            // 上述代码已经计算完毕每个vertex上的direct lighting所生成的Light Transport SHCoeff
+            // 下面将要计算Indirect Light对于单个vertex所产生的Light Transport SHCoeff并
+            for (int i = 0; i < mesh->getVertexCount(); i++)
+            {
+                const Point3f &v = mesh->getVertexPositions().col(i);
+                const Normal3f &n = mesh->getVertexNormals().col(i);
+
+
+
+
+                auto shFunc = [&](double phi, double theta) -> double {
+                    Eigen::Array3d d = sh::ToVector(phi, theta);
+                    const auto wi = Vector3f(d.x(), d.y(), d.z());
+
+                    // （计算该射线是否朝向mesh的背面方向[内部]）
+                    // 计算当前射线sample与所在pos法线的cosine, 如H<=0则返回0
+                    double H = n.dot(wi);
+                    if(H <= 0) return 0;
+
+
+                    Ray3f ray(v, wi);
+                    Intersection its;
+                    
+                    // 计算是否有击中物体，如没击中则返回0
+                    if (!scene->rayIntersect(ray, its)) return 0;
+                    
+                    // 2.当前光线与其他三角形相交，在交点处求出重心坐标插值后的球谐系数
+                    const float aRatio = its.bary.x();
+                    const float bRatio = its.bary.y();
+                    const float cRatio = its.bary.z();
+
+                    const int aIdx = its.tri_index.x();
+                    const int bIdx = its.tri_index.y();
+                    const int cIdx = its.tri_index.z();
+                    
+                    // 插值
+                    auto interpoSH = m_TransportSHCoeffs.col(aIdx) * aRatio + 
+                                    m_TransportSHCoeffs.col(bIdx) * bRatio +
+                                    m_TransportSHCoeffs.col(cIdx) * cRatio;
+                    
+
+
+                    return 0;
+                };
+                auto shCoeff = sh::ProjectFunction(SHOrder, shFunc, m_SampleCount);
+
+                for (int j = 0; j < shCoeff->size(); j++)
+                {
+                    m_TransportSHCoeffs.col(i).coeffRef(j) = (*shCoeff)[j];
+                }
+            
+            
+
+
+
+            }
         }
 
         // Save in face format
@@ -255,6 +346,11 @@ public:
                   << " to: " << transPath.str() << std::endl;
     }
 
+
+    // void LightTransportPrecompute(const Point3f &v, const Normal3f &n){
+
+    // }
+
     Color3f Li(const Scene *scene, Sampler *sampler, const Ray3f &ray) const
     {
         Intersection its;
@@ -275,10 +371,10 @@ public:
         // TODO: you need to delete the following four line codes after finishing your calculation to SH,
         //       we use it to visualize the normals of model for debug.
         // TODO: 在完成了球谐系数计算后，你需要删除下列四行，这四行代码的作用是用来可视化模型法线
-        if (c.isZero()) {
-            auto n_ = its.shFrame.n.cwiseAbs();
-            return Color3f(n_.x(), n_.y(), n_.z());
-        }
+        // if (c.isZero()) {
+        //     auto n_ = its.shFrame.n.cwiseAbs();
+        //     return Color3f(n_.x(), n_.y(), n_.z());
+        // }
         return c;
     }
 
