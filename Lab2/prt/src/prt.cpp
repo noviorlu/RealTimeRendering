@@ -290,10 +290,6 @@ public:
     }
 
 
-    // void LightTransportPrecompute(const Point3f &v, const Normal3f &n){
-
-    // }
-
     Color3f Li(const Scene *scene, Sampler *sampler, const Ray3f &ray) const
     {
         Intersection its;
