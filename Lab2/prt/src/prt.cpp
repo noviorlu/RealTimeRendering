@@ -262,63 +262,6 @@ public:
         if (m_Type == Type::Interreflection)
         {
             // TODO: leave for bonus
-            
-            // 上述代码已经计算完毕每个vertex上的direct lighting所生成的Light Transport SHCoeff
-            // 下面将要计算Indirect Light对于单个vertex所产生的Light Transport SHCoeff并
-            for (int i = 0; i < mesh->getVertexCount(); i++)
-            {
-                const Point3f &v = mesh->getVertexPositions().col(i);
-                const Normal3f &n = mesh->getVertexNormals().col(i);
-
-
-
-
-                auto shFunc = [&](double phi, double theta) -> double {
-                    Eigen::Array3d d = sh::ToVector(phi, theta);
-                    const auto wi = Vector3f(d.x(), d.y(), d.z());
-
-                    // （计算该射线是否朝向mesh的背面方向[内部]）
-                    // 计算当前射线sample与所在pos法线的cosine, 如H<=0则返回0
-                    double H = n.dot(wi);
-                    if(H <= 0) return 0;
-
-
-                    Ray3f ray(v, wi);
-                    Intersection its;
-                    
-                    // 计算是否有击中物体，如没击中则返回0
-                    if (!scene->rayIntersect(ray, its)) return 0;
-                    
-                    // 2.当前光线与其他三角形相交，在交点处求出重心坐标插值后的球谐系数
-                    const float aRatio = its.bary.x();
-                    const float bRatio = its.bary.y();
-                    const float cRatio = its.bary.z();
-
-                    const int aIdx = its.tri_index.x();
-                    const int bIdx = its.tri_index.y();
-                    const int cIdx = its.tri_index.z();
-                    
-                    // 插值
-                    auto interpoSH = m_TransportSHCoeffs.col(aIdx) * aRatio + 
-                                    m_TransportSHCoeffs.col(bIdx) * bRatio +
-                                    m_TransportSHCoeffs.col(cIdx) * cRatio;
-                    
-
-
-                    return 0;
-                };
-                auto shCoeff = sh::ProjectFunction(SHOrder, shFunc, m_SampleCount);
-
-                for (int j = 0; j < shCoeff->size(); j++)
-                {
-                    m_TransportSHCoeffs.col(i).coeffRef(j) = (*shCoeff)[j];
-                }
-            
-            
-
-
-
-            }
         }
 
         // Save in face format
