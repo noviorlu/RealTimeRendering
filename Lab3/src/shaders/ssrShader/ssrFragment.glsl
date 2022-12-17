@@ -140,18 +140,73 @@ vec3 EvalDirectionalLight(vec2 uv) {
   return Le;
 }
 
+#define MAX_STEPS 500
+#define STEP 0.005
+#define BIAS 1e-6
+
+
 bool RayMarch(vec3 ori, vec3 dir, out vec3 hitPos) {
+  vec3 curPos = ori;
+
+  for(int i = 0; i < MAX_STEPS; i++) {
+    curPos += (STEP * dir);
+
+    // 3D world space depth
+    float curDepth = GetDepth(curPos);
+    
+    // texture depth (apply mipmapLevel here)
+    float gbuffDepth = GetGBufferDepth(GetScreenCoordinate(curPos));
+
+    // If hit
+    if(curDepth > gbuffDepth - BIAS){
+      hitPos = curPos;
+      return true;
+    }
+
+  }
   return false;
 }
 
-#define SAMPLE_NUM 1
+#define SAMPLE_NUM 10
 
 void main() {
   float s = InitRand(gl_FragCoord.xy);
   vec2 uv = GetScreenCoordinate(vPosWorld.xyz);
+  vec3 N = normalize(GetGBufferNormalWorld(uv));
 
   vec3 L = vec3(0.0);
+  vec3 L_Indir = vec3(0.0);
+
+  float pdf;
+  vec3 b1, b2, localDir, worldDir, hitPos;
+  mat3 locToWorld;
+  for(int i = 0; i < SAMPLE_NUM; i++) {
+    
+    // obtain local dir
+    localDir = SampleHemisphereUniform(s, pdf);
+    
+    // local to world transformation
+    LocalBasis(N, b1, b2);
+    worldDir = normalize(mat3(b2, N, b1) * localDir);
+
+    // check if hit
+    if(RayMarch(vPosWorld.xyz, worldDir, hitPos)){
+      vec2 hituv = GetScreenCoordinate(hitPos);
+      L_Indir += EvalDiffuse(uLightDir, vec3(0.0), hituv);
+    }
+  }
+  L_Indir /= float(SAMPLE_NUM);
+
+  // FOR REFLECTION TESTING
+  // if(RayMarch(vPosWorld.xyz, reflect((vPosWorld.xyz - uCameraPos), N), hitPos)){
+  //   vec2 hituv = GetScreenCoordinate(hitPos);
+  //   L_Indir = EvalDiffuse(uLightDir, vec3(0.0), hituv) * EvalDirectionalLight(hituv);
+  // }
+
   L = EvalDiffuse(uLightDir, vec3(0.0), uv) * EvalDirectionalLight(uv);
+  
+  L += L_Indir;
+
   vec3 color = pow(clamp(L, vec3(0.0), vec3(1.0)), vec3(1.0 / 2.2));
   gl_FragColor = vec4(vec3(color.rgb), 1.0);
 }
