@@ -106,7 +106,7 @@ Vec3f IntegrateBRDF(Vec3f V, float roughness, float NdotV)
         float D = DistributionGGX(N, H, roughness);
         float G = GeometrySmith(roughness, NdotV, NdotL);
 
-        // NdotL equals cos(theta), cancels out with ui=cos(theta)
+        // NdotL equals cos(theta in), cancels out with cos(theta) infront of dwi
         float fr = (D * G) / (4.0f * NdotV * pdf);
         A += fr;
         B += fr;
